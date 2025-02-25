@@ -1,4 +1,4 @@
-class AuthRepository:
+class UserRepository:
     
     def __init__(self):
         pass

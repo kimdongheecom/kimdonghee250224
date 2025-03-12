@@ -1,9 +1,0 @@
-fastapi     #requirements.txt는 모든 라이브러리를 한 곳에서 관리한다. 내가 직접하는게 아니라 도커가 직접 install 한다.
-uvicorn
-pytz
-asyncpg
-sqlalchemy
-pytest
-dotenv
-databases
-pydantic

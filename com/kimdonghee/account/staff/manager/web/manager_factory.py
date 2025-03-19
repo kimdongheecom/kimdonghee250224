@@ -3,12 +3,12 @@
 
 from typing import Literal
 from sqlalchemy.ext.asyncio import AsyncSession
-from com.kimdonghee.account.staff.manager.strategy.create_strategy import DefaultCreateManagerStrategy, ValidateCreateManagerStrategy
-from com.kimdonghee.account.staff.manager.strategy.delete_strategy import HardDeleteManagerStrategy, SoftDeleteManagerStrategy
-from com.kimdonghee.account.staff.manager.strategy.retrieve_strategy import GetAllStrategy, GetDetailStrategy
-from com.kimdonghee.account.staff.manager.strategy.update_strategy import FullUpdateStrategy, PartialUpdateStrategy
-from com.kimdonghee.account.staff.manager.strategy.create_strategy import DefaultCreateManagerStrategy
-from com.kimdonghee.account.staff.manager.strategy.strategy_type import StrategyType
+from com.kimdonghee.account.staff.manager.services.create_strategy import DefaultCreateManagerStrategy, ValidateCreateManagerStrategy
+from com.kimdonghee.account.staff.manager.services.delete_strategy import HardDeleteManagerStrategy, SoftDeleteManagerStrategy
+from com.kimdonghee.account.staff.manager.services.retrieve_strategy import GetAllStrategy, GetDetailStrategy
+from com.kimdonghee.account.staff.manager.services.update_strategy import FullUpdateStrategy, PartialUpdateStrategy
+from com.kimdonghee.account.staff.manager.services.create_strategy import DefaultCreateManagerStrategy
+from com.kimdonghee.account.staff.manager.services.strategy_type import StrategyType
 
 
 class ManagerFactory:

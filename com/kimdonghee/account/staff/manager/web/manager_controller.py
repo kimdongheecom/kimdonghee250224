@@ -1,6 +1,6 @@
 
 
-from com.kimdonghee.account.staff.manager.strategy.strategy_type import StrategyType
+from com.kimdonghee.account.staff.manager.services.strategy_type import StrategyType
 from com.kimdonghee.account.staff.manager.web.manager_factory import ManagerFactory
 
 

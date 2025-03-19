@@ -1,82 +1,61 @@
 import os
-import asyncpg
+import asyncio
 from dotenv import load_dotenv
-from com.kimdonghee.utils.creational.singleton.db_singleton import db_singleton
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
-# ✅ 환경 변수 강제 로드
+# 환경 변수 로드
 load_dotenv()
 
-class DatabaseBuilder:
-    def __init__(self):
-        # ✅ db_url 확인 및 초기화
-        if not hasattr(db_singleton, "db_url") or not db_singleton.db_url:
-            print("⚠️ db_singleton이 올바르게 초기화되지 않았습니다. 환경 변수를 다시 로드합니다.")
-            db_singleton.db_url = os.getenv("DB_URL")
+# ✅ 1. 환경 변수에서 DB URL 가져오기
+# 환경 변수 가져오기
+DB_HOSTNAME = os.getenv("DB_HOSTNAME", "localhost")
+DB_USERNAME = os.getenv("DB_USERNAME", "user")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_DATABASE = os.getenv("DB_DATABASE", "mydatabase")
 
-        if not db_singleton.db_url:
-            raise AttributeError("❌ 'db_url'이 설정되지 않았습니다. .env 파일을 확인하세요.")
+# PostgreSQL `DB_URL` 생성
+DATABASE_URL = f"postgresql+asyncpg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOSTNAME}:{DB_PORT}/{DB_DATABASE}"
 
-        print(f"✅ DatabaseBuilder 초기화 완료: {db_singleton.db_url}")  # 디버깅 로그
+if not DATABASE_URL:
+    raise ValueError("❌ 환경 변수 'DB_URL'이 설정되지 않았습니다.")
+else:
+    print("✅😁😁😁😁 DB_URL 환경 변수가 설정되었습니다.")
 
-        self.database_url = db_singleton.db_url
-        self.min_size = 1
-        self.max_size = 10
-        self.timeout = 60
-        self.pool = None
+# ✅ 2. SQLAlchemy 비동기 엔진 설정 (asyncpg 사용)
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,          # SQL 실행 로그 표시 (디버깅용)
+    future=True,        # 최신 SQLAlchemy API 사용
+    pool_size=5,        # 커넥션 풀 크기 설정
+    max_overflow=10,    # 최대 오버플로우 커넥션 개수
+    pool_timeout=30,    # 커넥션 대기 시간 (초)
+    pool_recycle=1800,  # 커넥션 재활용 시간 (초)
+)
 
-    def pool_size(self, min_size: int = 1, max_size: int = 10):
-        self.min_size = min_size
-        self.max_size = max_size
-        return self
+# ✅ 3. 세션 팩토리 생성
+async_session_maker = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False
+)
 
-    def set_timeout(self, timeout: int = 60):  # ✅ 메서드 이름 중복 방지
-        self.timeout = timeout
-        return self
+# ✅ 4. 데이터베이스 모델 정의
+Base = declarative_base()
 
-    async def build(self):
-        if not self.database_url:
-            raise ValueError("⚠️ Database URL must be set before building the database")
-
-        print(f"🚀 Connecting to PostgreSQL: {self.database_url}")  # ✅ 디버깅 로그
-
-        self.pool = await asyncpg.create_pool(
-            dsn=self.database_url,
-            min_size=self.min_size,
-            max_size=self.max_size,
-            timeout=self.timeout,
-        )
-        return AsyncDatabase(self.pool)
-    
-class AsyncDatabase:
-    def __init__(self, pool):
-        self.pool = pool
-
-    async def fetch(self, query: str, *args):
-        async with self.pool.acquire() as connection:
-            return await connection.fetch(query, *args)
-
-    async def execute(self, query: str, *args):
-        async with self.pool.acquire() as connection:
-            return await connection.execute(query, *args)
-
-    async def close(self):
-        await self.pool.close()
-    
+# ✅ 5. FastAPI에서 사용할 비동기 DB 세션 제공 함수
 async def get_db():
-    # ✅ db_url 다시 확인 및 초기화
-    if not hasattr(db_singleton, "db_url") or not db_singleton.db_url:
-        print("⚠️ db_singleton이 올바르게 초기화되지 않았습니다. 환경 변수를 다시 로드합니다.")
-        db_singleton.db_url = os.getenv("DB_URL")
+    async with async_session_maker() as session:
+        yield session  # FastAPI의 Depends()에서 사용 가능
 
-        if not db_singleton.db_url:
-            raise AttributeError("❌ 환경 변수를 다시 로드했지만 'db_url'이 설정되지 않았습니다. .env 파일을 확인하세요.")
+# ✅ 6. 비동기 테이블 생성 함수
+async def init_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-    print(f"✅ db_singleton 초기화 확인: {db_singleton.db_url}")  # ✅ 디버깅 로그
-
-    builder = DatabaseBuilder()
-    db = await builder.build()
-
-    try:
-        yield db  # ✅ FastAPI의 Depends()에서 사용할 수 있도록 yield로 반환
-    finally:
-        await db.close()
+# ✅ 7. FastAPI 실행 시 DB 초기화
+if __name__ == "__main__":
+    asyncio.run(init_db())  # 초기화 실행
+    print("✅ Database initialized successfully!")

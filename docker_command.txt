@@ -11,5 +11,6 @@
  docker exec -it backend bash
  docker compose logs backend (백엔드를 밖에서 보는 것)
  docker-compose logs --tail=500 backend
+
  docker-compose build --no-cache backend (백엔드에서만 캐쉬없이 빌드하는 방법)
  docker compose up --build -d

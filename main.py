@@ -1,13 +1,39 @@
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from contextlib import asynccontextmanager
 
 from com.kimdonghee.app_router import router as app_router
+
+from fastapi.middleware.cors import CORSMiddleware
+
+from com.kimdonghee.utils.creational.builder.db_builder import init_db
+from com.kimdonghee.utils.creational.builder.db_builder import engine
 
 # python -m uvicorn main:app --reload
 app = FastAPI()
 
-app.include_router(app_router) #aap은 메인라우터이다.
+# ✅ CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 도메인 허용 (실제 배포 시 보안 고려 필요)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ✅ 애플리케이션 시작 시 `init_db()` 실행
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("🚀🚀🚀🚀 FastAPI 앱이 시작됩니다. 데이터베이스 초기화 중...")
+    await init_db()  # ✅ DB 초기화 실행
+    print("✅ 데이터베이스 초기화 완료!")
+    yield  # 애플리케이션이 실행되는 동안 유지
+    print("🛑 FastAPI 앱이 종료됩니다.")
+    await engine.dispose()  # 🔥 모든 커넥션 정리
+    print("✅ DB 연결이 정상적으로 종료되었습니다.")
+
+app.include_router(app_router,prefix="/api") #aap은 메인라우터이다.
 print("😎😀➕ 메인 라우터로 진입")
 
 

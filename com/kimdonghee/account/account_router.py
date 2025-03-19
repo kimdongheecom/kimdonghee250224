@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from com.kimdonghee.account.guest.customer.web.customer_router import router as customer_router
+from com.kimdonghee.account.guest.customer.api.customer_router import router as customer_router
 from com.kimdonghee.account.staff.manager.web.manager_router import router as manager_router
 
 router = APIRouter()

@@ -8,6 +8,7 @@ class CustomerController:
         pass
 
     async def create_customer(self, **kwargs):
+        print("🎋🎄🎍", "controller 에서 create_customer 로 진입함")
         return await CustomerFactory.create(strategy=CustomerAction.CREATE_CUSTOMER,**kwargs) #default_create를 create 방식으로 해주세요.
     
     async def get_customer_by_id(self, **kwargs):

@@ -11,7 +11,7 @@ controller = CustomerController()
 
 @router.post(path="/create")
 async def create_customer(new_customer:CustomerSchema, db: AsyncSession = Depends(get_db)):
-    print("🎋🎄🎍", "create_customer 로 진입함")
+    print("🎋🎄🎍", "router 에서 create_customer 로 진입함")
     print("new_customer", new_customer)
     return await controller.create_customer(new_customer=new_customer, db=db)
     

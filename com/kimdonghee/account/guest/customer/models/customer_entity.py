@@ -1,4 +1,7 @@
-from com.kimdonghee.account.common.user.model.user_entity import UserEntity
+
+
+from com.kimdonghee.account.auth.user.models.user_entity import UserEntity
+
 
 class CustomerEntity(UserEntity):
     """

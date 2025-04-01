@@ -9,4 +9,7 @@ databases
 pydantic
 email-validator
 passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.4.0
 shortuuid==1.0.13
+python-dotenv
+redis[asyncio]>=4.5.5

@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pkl
+*.sqlite3
+*.db
+
+# 환경설정
+.env
+
+# VSCode 설정
+.vscode/
+
+# Docker
+*.log
+docker_command.txt
+*.pid
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# MyPy, Pylint 등
+.mypy_cache/
+.pytest_cache/
+.pyre/
+.cache/
+.coverage
+coverage.xml
+
+# Test reports
+htmlcov/
+
+# PyInstaller
+dist/
+build/
+*.spec
+
+# Virtual Environment
+venv/
+.env/
+.venv/

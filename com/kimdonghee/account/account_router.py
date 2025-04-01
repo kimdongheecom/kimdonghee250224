@@ -9,5 +9,5 @@ router = APIRouter()
 
 router.include_router(customer_router, prefix="/customer") #router는 서브라우터이다.
 router.include_router(manager_router, prefix="/manager")
-router.include_router(user_router, prefix="/auth")
+router.include_router(user_router, prefix="/user")
 print("😎😀➕ 어카운트 라우터로 진입")
